@@ -3,45 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tourist Portal</title>
+    <title>21-Days-21-Projects-1</title>
     <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
     />
   </head>
+
   <body>
+    <!-- Header -->
     <header role="banner">
       <div class="container">
-        <nav role="navigation">
+        <nav role="navigation" aria-label="Main Navigation">
           <h1>ExploreWorld</h1>
           <ul>
-            <li><a href="#home">Home</a></li>
+            <li><a href="#home" aria-current="page">Home</a></li>
             <li><a href="#destinations">Destinations</a></li>
             <li><a href="#packages">Packages</a></li>
             <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="#booknow">Book Now</a></li>
+            <li><a href="#booking">Book Now</a></li>
           </ul>
         </nav>
       </div>
     </header>
 
-    <section id="home">
-      <video class="bg-video" autoplay muted loop playinline>
-        <source src="" type="video/mp4" />
+    <!-- Home -->
+    <section id="home" role="region" aria-label="Home Section">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        class="bg-video"
+        aria-label="Travel background video"
+      >
+        <source
+          src="https://www.pexels.com/download/video/3015510/"
+          type="video/mp4"
+        />
+        Your browser does not support HTML5 video.
       </video>
-    </section>
 
-    <div class="home-content container">
-      <h2>Discover Your Next Adventure</h2>
-      <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Soluta et
-        optio ipsum at, ex deserunt ullam nobis debitis libero voluptatum, sit
-        laudantium. Voluptates quasi, iusto doloremque similique necessitatibus
-        adipisci reprehenderit autem molestias sapiente consectetur.
-      </p>
-      <a>Explore Packages</a>
-    </div>
+      <div class="overlay" aria-hidden="true"></div>
+
+      <div class="home-content container">
+        <h2>Discover Your Next Adventure</h2>
+        <p>
+          Explore breathtaking destinations around the world and create memories
+          that last a lifetime.
+        </p>
+        <a href="#packages" class="btn" aria-label="Explore travel packages">
+          Explore Packages
+        </a>
+      </div>
+    </section>
+    <div>
   </body>
 </html>
