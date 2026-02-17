@@ -21,7 +21,7 @@ const CourseCard = () => {
 
         {/* Title */}
         <h3 className="font-bold text-gray-900 leading-snug mb-2 line-clamp-2">
-         Title
+          Title
         </h3>
 
         {/* Instructor */}
