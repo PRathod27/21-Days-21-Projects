@@ -14,11 +14,6 @@ import {
 const Course = () => {
   const { id: courseId } = useParams();
 
-  
-
-
-  
-
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -46,7 +41,7 @@ const Course = () => {
               <span>
                 Created by{" "}
                 <span className="underline text-blue-300">
-                 instructor
+                  instructor
                 </span>
               </span>
             </div>
@@ -74,14 +69,14 @@ const Course = () => {
 
             <div className="flex flex-col gap-3">
               <button
-                
+
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-blue-700"
               >
                 <ShoppingCart size={20} />{" "}
-               Add to Cart
+                Add to Cart
               </button>
               <button
-               
+
                 className="w-full border border-gray-900 py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gray-50"
               >
                 <Heart size={20} />
@@ -102,12 +97,12 @@ const Course = () => {
           <div className="border border-gray-200 p-6 rounded-lg mb-8">
             <h2 className="text-2xl font-bold mb-4">What you'll learn</h2>
             <div className="grid sm:grid-cols-2 gap-3">
-             
-                <div  className="flex gap-2 text-sm text-gray-700">
-                  <CheckCircle size={18} className="text-green-600 shrink-0" />
-                  <span>item</span>
-                </div>
-             
+
+              <div className="flex gap-2 text-sm text-gray-700">
+                <CheckCircle size={18} className="text-green-600 shrink-0" />
+                <span>item</span>
+              </div>
+
             </div>
           </div>
 
@@ -115,9 +110,9 @@ const Course = () => {
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-2">Prerequisites</h2>
             <ul className="list-disc ml-5 text-gray-700">
-              
-                <li >item</li>
-             
+
+              <li >item</li>
+
             </ul>
           </div>
         </div>

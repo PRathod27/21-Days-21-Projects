@@ -1,105 +1,1699 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Resource Manager</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manager Tool</title>
+
+    <!-- Bootstrap 5 -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <!-- Font Awesome -->
     <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
+      /* Minimal adjustments for layout that Bootstrap utilities can't perfectly cover in 5.3 without custom builds */
       .sidebar {
         width: 280px;
         min-height: 100vh;
       }
+
+      /* Smooth theme transition */
       body,
+      .card,
       .sidebar,
-      .navbar {
-        transition: background-color 0.3s ease border-color 0.3s;
+      .navbar,
+      .modal-content {
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          border-color 0.3s;
+      }
+
+      /* Toast Styling */
+      .toast {
+        min-width: 300px;
+        max-width: 500px;
+        opacity: 1;
+        transition: all 0.3s ease;
+      }
+
+      .toast.show {
+        animation: slideInRight 0.3s ease;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* Tab Pills Custom Style */
+      .nav-pills .nav-link {
+        border-radius: 50px !important;
+        transition: all 0.2s ease;
+      }
+
+      .nav-pills .nav-link:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Accordion Custom Style */
+      .accordion-button {
+        padding: 1rem;
+      }
+
+      .accordion-button:not(.collapsed) {
+        box-shadow: none;
+      }
+
+      /* List Group Hover Effect */
+      .list-group-item-action:hover {
+        background-color: var(--bs-tertiary-bg);
       }
     </style>
   </head>
-  <body>
-    <div class="bg-body-secondary">
-      <div id="wrapper" class="d-flex">
-        <div
-          class="sidebar bg-body-tertiary border-end p-3 d-none d-lg-flex flex-column flex-shrink-0 position-fixed top-0 start-0 z-3"
+
+  <body class="bg-body-secondary">
+    <div class="d-flex" id="wrapper">
+      <!-- Sidebar -->
+      <div
+        class="sidebar bg-body-tertiary border-end p-3 d-none d-lg-flex flex-column flex-shrink-0 position-fixed top-0 start-0 z-3"
+      >
+        <a
+          href="/"
+          class="d-flex align-items-center mb-4 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
         >
+          <i class="fa-solid fa-robot fa-2x me-2 text-primary"></i>
+          <div>
+            <span class="fs-5 fw-bold">Resource Mgr</span>
+            <div class="small text-secondary">Suite v2.0</div>
+          </div>
+        </a>
+        <hr />
+        <ul class="nav nav-pills flex-column mb-auto gap-2">
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link active d-flex align-items-center"
+              aria-current="page"
+            >
+              <i class="fa-solid fa-gauge-high me-3 w-25 text-center"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a
+              href="#allocations"
+              class="nav-link link-body-emphasis d-flex align-items-center"
+            >
+              <i class="fa-solid fa-diagram-project me-3 w-25 text-center"></i>
+              Allocations
+            </a>
+          </li>
+          <li>
+            <a
+              href="#teams"
+              class="nav-link link-body-emphasis d-flex align-items-center"
+            >
+              <i class="fa-solid fa-users me-3 w-25 text-center"></i>
+              Teams
+            </a>
+          </li>
+          <li>
+            <a
+              href="#projects"
+              class="nav-link link-body-emphasis d-flex align-items-center"
+            >
+              <i class="fa-solid fa-briefcase me-3 w-25 text-center"></i>
+              Projects
+            </a>
+          </li>
+          <li>
+            <a
+              href="#reports"
+              class="nav-link link-body-emphasis d-flex align-items-center"
+            >
+              <i class="fa-solid fa-file-lines me-3 w-25 text-center"></i>
+              Reports
+            </a>
+          </li>
+        </ul>
+        <hr />
+        <div class="dropdown">
           <a
-            href=""
-            class="d-flex align-items-center mb-4 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+            href="#"
+            class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            <i class="fa-solid fa-robot fa-2x me-2 text-primary"></i>
-            <div>
-              <span class="fs-5 fw-bold">Resource Mgr</span>
-              <div class="small text-secondary">Resource Manager</div>
-            </div>
+            <img
+              src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg"
+              alt=""
+              width="32"
+              height="32"
+              class="rounded-circle me-2 object-fit-cover"
+            />
+            <strong>Vikas</strong>
           </a>
-          <hr />
+          <ul class="dropdown-menu text-small shadow">
+            <li><a class="dropdown-item" href="#">New project...</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+            <li><a class="dropdown-item" href="#">Sign out</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mobile Offcanvas Sidebar -->
+      <div
+        class="offcanvas offcanvas-start bg-body-tertiary"
+        tabindex="-1"
+        id="mobileSidebar"
+      >
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title fw-bold">
+            <i class="fa-solid fa-robot me-2 text-primary"></i> Resource Mgr
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column h-100">
+          <!-- Same Nav Content as Desktop -->
           <ul class="nav nav-pills flex-column mb-auto gap-2">
             <li class="nav-item">
               <a
-                href=""
+                href="#"
                 class="nav-link active d-flex align-items-center"
                 aria-current="page"
               >
                 <i class="fa-solid fa-gauge-high me-3 w-25 text-center"></i>
-                Dashboard</a
-              >
+                Dashboard
+              </a>
             </li>
-            <li class="nav-item">
+            <li>
               <a
-                href=""
-                class="nav-link active d-flex align-items-center"
-                aria-current="page"
+                href="#projects"
+                class="nav-link link-body-emphasis d-flex align-items-center"
               >
-                <i class="fa-solid fa-gauge-high me-3 w-25 text-center"></i>
-                About</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                href=""
-                class="nav-link active d-flex align-items-center"
-                aria-current="page"
-              >
-                <i class="fa-solid fa-gauge-high me-3 w-25 text-center"></i>
-                Analytics</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                href=""
-                class="nav-link active d-flex align-items-center"
-                aria-current="page"
-              >
-                <i class="fa-solid fa-gauge-high me-3 w-25 text-center"></i>
-                Dashboard</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                href=""
-                class="nav-link active d-flex align-items-center"
-                aria-current="page"
-              >
-                <i class="fa-solid fa-gauge-high me-3 w-25 text-center"></i>
-                Dashboard</a
-              >
+                <i class="fa-solid fa-briefcase me-3 w-25 text-center"></i>
+                Projects
+              </a>
             </li>
           </ul>
         </div>
       </div>
+
+      <!-- Page Content -->
+      <div
+        class="w-100"
+        style="margin-left: 280px; @media (max-width: 991px) {margin-left: 0}"
+      >
+        <!-- Responsive wrapper styling hack for inline specific style needed due to fixed sidebar width -->
+        <style>
+          @media (max-width: 991.98px) {
+            .w-100[style] {
+              margin-left: 0 !important;
+            }
+          }
+        </style>
+
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="p-3 bg-body-tertiary">
+          <div class="container-fluid">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="#" class="text-decoration-none">Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Dashboard
+              </li>
+            </ol>
+          </div>
+        </nav>
+
+        <!-- Top Header -->
+        <header class="p-3 mb-4 border-bottom bg-body-tertiary sticky-top">
+          <div
+            class="container-fluid d-flex align-items-center justify-content-between"
+          >
+            <div class="d-flex align-items-center gap-3">
+              <button
+                class="btn btn-outline-secondary d-lg-none"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h4 class="mb-0 d-none d-sm-block fw-semibold">Dashboard</h4>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <form class="d-none d-md-flex" role="search">
+                <div class="input-group">
+                  <span class="input-group-text bg-body-secondary border-end-0"
+                    ><i class="fa-solid fa-magnifying-glass text-secondary"></i
+                  ></span>
+                  <input
+                    class="form-control bg-body-secondary border-start-0"
+                    type="search"
+                    placeholder="Search..."
+                    aria-label="Search"
+                  />
+                </div>
+              </form>
+
+              <div class="vr mx-2"></div>
+
+              <!-- Theme Toggle -->
+              <button
+                class="btn btn-outline-secondary rounded-circle p-2"
+                id="themeToggle"
+                style="width: 40px; height: 40px"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Toggle Theme"
+              >
+                <i class="fa-regular fa-moon" id="themeIcon"></i>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary position-relative rounded-circle p-2"
+                id="notificationBtn"
+                style="width: 40px; height: 40px"
+                aria-label="Notifications"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Notifications"
+              >
+                <i class="fa-regular fa-bell"></i>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                >
+                  <span class="visually-hidden">New alerts</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content Container -->
+        <main class="container-fluid px-4 pb-5">
+          <!-- Alert Messages -->
+          <div class="row g-4 mb-4">
+            <div class="col-12">
+              <div
+                class="alert alert-info alert-dismissible fade show"
+                role="alert"
+              >
+                <i class="fa-solid fa-circle-info me-2"></i>
+                <strong>Welcome back!</strong> You have 3 pending allocations to
+                review.
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>
+            </div>
+            <div class="col-12">
+              <div
+                class="alert alert-warning alert-dismissible fade show"
+                role="alert"
+              >
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <strong>Action Required:</strong> Infrastructure migration
+                deadline approaching in 2 weeks.
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h6
+                      class="text-body-secondary text-uppercase fw-semibold small"
+                    >
+                      Total Resources
+                    </h6>
+                    <div
+                      class="bg-primary-subtle text-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
+                      style="width: 32px; height: 32px"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="Total team members"
+                    >
+                      <i class="fa-solid fa-users"></i>
+                    </div>
+                  </div>
+                  <h3 class="fw-bold mb-1">128</h3>
+                  <div class="d-flex align-items-center">
+                    <span
+                      class="badge bg-success-subtle text-success rounded-pill me-2"
+                      ><i class="fa-solid fa-arrow-up"></i> 6%</span
+                    >
+                    <span class="small text-body-secondary">vs last month</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h6
+                      class="text-body-secondary text-uppercase fw-semibold small"
+                    >
+                      Active Projects
+                    </h6>
+                    <div
+                      class="bg-success-subtle text-success rounded-circle p-2 d-flex align-items-center justify-content-center"
+                      style="width: 32px; height: 32px"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="Active project count"
+                    >
+                      <i class="fa-solid fa-diagram-project"></i>
+                    </div>
+                  </div>
+                  <h3 class="fw-bold mb-1">24</h3>
+                  <div class="d-flex align-items-center">
+                    <span
+                      class="badge bg-primary-subtle text-primary rounded-pill me-2"
+                      >4 New</span
+                    >
+                    <span class="small text-body-secondary">launched</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h6
+                      class="text-body-secondary text-uppercase fw-semibold small"
+                    >
+                      Avg Utilization
+                    </h6>
+                    <div
+                      class="bg-warning-subtle text-warning rounded-circle p-2 d-flex align-items-center justify-content-center"
+                      style="width: 32px; height: 32px"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="Team utilization rate"
+                    >
+                      <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                  </div>
+                  <h3 class="fw-bold mb-1">82%</h3>
+                  <div class="d-flex align-items-center">
+                    <span
+                      class="badge bg-warning-subtle text-warning rounded-pill me-2"
+                      >Stable</span
+                    >
+                    <span class="small text-body-secondary">trend</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                  <div
+                    class="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <h6
+                      class="text-body-secondary text-uppercase fw-semibold small"
+                    >
+                      On Bench
+                    </h6>
+                    <div
+                      class="bg-danger-subtle text-danger rounded-circle p-2 d-flex align-items-center justify-content-center"
+                      style="width: 32px; height: 32px"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="Unallocated resources"
+                    >
+                      <i class="fa-solid fa-user-clock"></i>
+                    </div>
+                  </div>
+                  <h3 class="fw-bold mb-1">14</h3>
+                  <div class="d-flex align-items-center">
+                    <span
+                      class="badge bg-danger-subtle text-danger rounded-pill me-2"
+                      >High</span
+                    >
+                    <span class="small text-body-secondary"
+                      >needs allocation</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart and Table -->
+          <div class="row g-4 mb-5">
+            <div class="col-lg-7">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                  <h5 class="fw-bold mb-0">Utilization Trends</h5>
+                </div>
+                <div class="card-body px-4 pb-4">
+                  <canvas id="utilChart" height="150"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div
+                  class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center"
+                >
+                  <h5 class="fw-bold mb-0">Top Allocations</h5>
+                  <button class="btn btn-sm btn-light rounded-pill px-3">
+                    View All
+                  </button>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th class="ps-4">Team</th>
+                          <th>Members</th>
+                          <th class="pe-4">Capacity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                              <div class="bg-primary-subtle rounded p-1 me-2">
+                                <i class="fa-solid fa-server text-primary"></i>
+                              </div>
+                              <span class="fw-medium">Platform</span>
+                            </div>
+                          </td>
+                          <td>28</td>
+                          <td class="pe-4">
+                            <div
+                              class="d-flex align-items-center gap-2"
+                              style="width: 120px"
+                            >
+                              <div
+                                class="progress w-100"
+                                role="progressbar"
+                                style="height: 6px"
+                              >
+                                <div
+                                  class="progress-bar"
+                                  style="width: 78%"
+                                ></div>
+                              </div>
+                              <span class="small fw-semibold">78%</span>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                              <div class="bg-info-subtle rounded p-1 me-2">
+                                <i class="fa-solid fa-brain text-info"></i>
+                              </div>
+                              <span class="fw-medium">Data Science</span>
+                            </div>
+                          </td>
+                          <td>14</td>
+                          <td class="pe-4">
+                            <div
+                              class="d-flex align-items-center gap-2"
+                              style="width: 120px"
+                            >
+                              <div
+                                class="progress w-100"
+                                role="progressbar"
+                                style="height: 6px"
+                              >
+                                <div
+                                  class="progress-bar bg-info"
+                                  style="width: 62%"
+                                ></div>
+                              </div>
+                              <span class="small fw-semibold">62%</span>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                              <div class="bg-warning-subtle rounded p-1 me-2">
+                                <i
+                                  class="fa-solid fa-mobile-screen text-warning"
+                                ></i>
+                              </div>
+                              <span class="fw-medium">Mobile App</span>
+                            </div>
+                          </td>
+                          <td>18</td>
+                          <td class="pe-4">
+                            <div
+                              class="d-flex align-items-center gap-2"
+                              style="width: 120px"
+                            >
+                              <div
+                                class="progress w-100"
+                                role="progressbar"
+                                style="height: 6px"
+                              >
+                                <div
+                                  class="progress-bar bg-warning"
+                                  style="width: 45%"
+                                ></div>
+                              </div>
+                              <span class="small fw-semibold">45%</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects Section -->
+          <div class="mb-4" id="projects">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold mb-0">Active Projects</h4>
+              <button
+                class="btn btn-primary rounded-pill px-4"
+                data-bs-toggle="modal"
+                data-bs-target="#addProjectModal"
+              >
+                <i class="fa-solid fa-plus me-2"></i> New Project
+              </button>
+            </div>
+
+            <!-- Project Tabs -->
+            <ul
+              class="nav nav-pills mb-4 gap-2"
+              id="projectTabs"
+              role="tablist"
+            >
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="all-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#all"
+                  type="button"
+                  role="tab"
+                  aria-controls="all"
+                  aria-selected="true"
+                >
+                  <i class="fa-solid fa-list me-2"></i>All Projects
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="active-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#active"
+                  type="button"
+                  role="tab"
+                  aria-controls="active"
+                  aria-selected="false"
+                >
+                  <i class="fa-solid fa-play me-2"></i>In Progress
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="completed-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#completed"
+                  type="button"
+                  role="tab"
+                  aria-controls="completed"
+                  aria-selected="false"
+                >
+                  <i class="fa-solid fa-check me-2"></i>Completed
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="pending-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#pending"
+                  type="button"
+                  role="tab"
+                  aria-controls="pending"
+                  aria-selected="false"
+                >
+                  <i class="fa-solid fa-hourglass-end me-2"></i>Pending
+                </button>
+              </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="projectTabContent">
+              <!-- Tab Pane: All Projects -->
+              <div
+                class="tab-pane fade show active"
+                id="all"
+                role="tabpanel"
+                aria-labelledby="all-tab"
+              >
+                <div class="row g-4 mb-5" id="projectGrid">
+                  <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+                      <div class="card-body">
+                        <div
+                          class="d-flex justify-content-between align-items-start mb-3"
+                        >
+                          <div>
+                            <h5 class="card-title fw-bold mb-1">
+                              Payments Revamp
+                            </h5>
+                            <span
+                              class="badge bg-primary-subtle text-primary border border-primary-subtle"
+                              >Backend Team</span
+                            >
+                          </div>
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-link text-body-secondary p-0"
+                              data-bs-toggle="dropdown"
+                            >
+                              <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a class="dropdown-item" href="#">Edit</a>
+                              </li>
+                              <li>
+                                <a class="dropdown-item" href="#">Details</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <p class="card-text text-body-secondary small">
+                          Overhauling the payment gateway integration for better
+                          global support.
+                        </p>
+
+                        <div
+                          class="d-flex justify-content-between align-items-end mt-4"
+                        >
+                          <div class="w-100 me-3">
+                            <div class="d-flex justify-content-between mb-1">
+                              <span class="small fw-medium">Progress</span>
+                              <span class="small fw-bold">80%</span>
+                            </div>
+                            <div
+                              class="progress"
+                              role="progressbar"
+                              style="height: 6px"
+                            >
+                              <div
+                                class="progress-bar"
+                                style="width: 80%"
+                              ></div>
+                            </div>
+                          </div>
+                          <div
+                            class="bg-body-secondary rounded p-2 text-center"
+                            style="min-width: 60px"
+                          >
+                            <div class="small fw-bold">DEC</div>
+                            <div class="fw-bold small text-muted">2025</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="card-footer bg-transparent border-0 pt-0 pb-3"
+                      >
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-group d-flex">
+                            <img
+                              src="https://i.pravatar.cc/100?img=1"
+                              class="rounded-circle border border-2 border-body translate-middle-x"
+                              width="30"
+                              height="30"
+                            />
+                            <img
+                              src="https://i.pravatar.cc/100?img=2"
+                              class="rounded-circle border border-2 border-body translate-middle-x ms-n2"
+                              width="30"
+                              height="30"
+                              style="margin-left: -10px"
+                            />
+                            <img
+                              src="https://i.pravatar.cc/100?img=3"
+                              class="rounded-circle border border-2 border-body translate-middle-x ms-n2"
+                              width="30"
+                              height="30"
+                              style="margin-left: -10px"
+                            />
+                          </div>
+                          <span class="small text-muted ms-2">+5 others</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Project 2 -->
+                  <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+                      <div class="card-body">
+                        <div
+                          class="d-flex justify-content-between align-items-start mb-3"
+                        >
+                          <div>
+                            <h5 class="card-title fw-bold mb-1">AI Insights</h5>
+                            <span
+                              class="badge bg-success-subtle text-success border border-success-subtle"
+                              >Data Science</span
+                            >
+                          </div>
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-link text-body-secondary p-0"
+                              data-bs-toggle="dropdown"
+                            >
+                              <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a class="dropdown-item" href="#">Action</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <p class="card-text text-body-secondary small">
+                          Predictive analytics dashboard for customer retention.
+                        </p>
+
+                        <div
+                          class="d-flex justify-content-between align-items-end mt-4"
+                        >
+                          <div class="w-100 me-3">
+                            <div class="d-flex justify-content-between mb-1">
+                              <span class="small fw-medium">Progress</span>
+                              <span class="small fw-bold">65%</span>
+                            </div>
+                            <div
+                              class="progress"
+                              role="progressbar"
+                              style="height: 6px"
+                            >
+                              <div
+                                class="progress-bar bg-success"
+                                style="width: 65%"
+                              ></div>
+                            </div>
+                          </div>
+                          <div
+                            class="bg-body-secondary rounded p-2 text-center"
+                            style="min-width: 60px"
+                          >
+                            <div class="small fw-bold">JAN</div>
+                            <div class="fw-bold small text-muted">2026</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="card-footer bg-transparent border-0 pt-0 pb-3"
+                      >
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-group d-flex">
+                            <img
+                              src="https://i.pravatar.cc/100?img=4"
+                              class="rounded-circle border border-2 border-body translate-middle-x"
+                              width="30"
+                              height="30"
+                            />
+                            <img
+                              src="https://i.pravatar.cc/100?img=5"
+                              class="rounded-circle border border-2 border-body translate-middle-x ms-n2"
+                              width="30"
+                              height="30"
+                              style="margin-left: -10px"
+                            />
+                          </div>
+                          <span class="small text-muted ms-2">+2 others</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Project 3 -->
+                  <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+                      <div class="card-body">
+                        <div
+                          class="d-flex justify-content-between align-items-start mb-3"
+                        >
+                          <div>
+                            <h5 class="card-title fw-bold mb-1">
+                              Infrastructure Up
+                            </h5>
+                            <span
+                              class="badge bg-warning-subtle text-warning border border-warning-subtle"
+                              >DevOps</span
+                            >
+                          </div>
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-link text-body-secondary p-0"
+                              data-bs-toggle="dropdown"
+                            >
+                              <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a class="dropdown-item" href="#">Action</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <p class="card-text text-body-secondary small">
+                          Migrating legacy servers to containerized
+                          orchestration.
+                        </p>
+
+                        <div
+                          class="d-flex justify-content-between align-items-end mt-4"
+                        >
+                          <div class="w-100 me-3">
+                            <div class="d-flex justify-content-between mb-1">
+                              <span class="small fw-medium">Progress</span>
+                              <span class="small fw-bold">50%</span>
+                            </div>
+                            <div
+                              class="progress"
+                              role="progressbar"
+                              style="height: 6px"
+                            >
+                              <div
+                                class="progress-bar bg-warning"
+                                style="width: 50%"
+                              ></div>
+                            </div>
+                          </div>
+                          <div
+                            class="bg-body-secondary rounded p-2 text-center"
+                            style="min-width: 60px"
+                          >
+                            <div class="small fw-bold">FEB</div>
+                            <div class="fw-bold small text-muted">2026</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="card-footer bg-transparent border-0 pt-0 pb-3"
+                      >
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-group d-flex">
+                            <img
+                              src="https://i.pravatar.cc/100?img=8"
+                              class="rounded-circle border border-2 border-body translate-middle-x"
+                              width="30"
+                              height="30"
+                            />
+                          </div>
+                          <span class="small text-muted ms-2">Lead only</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Pane: In Progress -->
+            <div
+              class="tab-pane fade"
+              id="active"
+              role="tabpanel"
+              aria-labelledby="active-tab"
+            >
+              <div class="alert alert-info mb-0">
+                <i class="fa-solid fa-spinner me-2"></i>
+                <strong>In Progress Projects:</strong> Showing projects
+                currently in progress (80% and above completion)
+              </div>
+            </div>
+
+            <!-- Tab Pane: Completed -->
+            <div
+              class="tab-pane fade"
+              id="completed"
+              role="tabpanel"
+              aria-labelledby="completed-tab"
+            >
+              <div class="alert alert-success mb-0">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                No completed projects at this time
+              </div>
+            </div>
+
+            <!-- Tab Pane: Pending -->
+            <div
+              class="tab-pane fade"
+              id="pending"
+              role="tabpanel"
+              aria-labelledby="pending-tab"
+            >
+              <div class="alert alert-warning mb-0">
+                <i class="fa-solid fa-clock me-2"></i>
+                Showing projects waiting for resource allocation
+              </div>
+            </div>
+          </div>
+
+          <!-- Reports Section (Restored) -->
+          <div class="d-flex align-items-center mb-4" id="reports">
+            <h4 class="fw-bold mb-0">Reports & Analytics</h4>
+          </div>
+          <div class="row g-4 mb-5">
+            <div class="col-md-7">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                  <h5 class="fw-bold mb-0">Project Performance</h5>
+                </div>
+                <div class="card-body px-4 pb-4">
+                  <canvas id="reportBar"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                  <h5 class="fw-bold mb-0">Resource Distribution</h5>
+                </div>
+                <div class="card-body px-4 pb-4">
+                  <canvas id="reportPie"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teams Accordion Section -->
+          <div class="d-flex align-items-center mb-4" id="teams">
+            <h4 class="fw-bold mb-0">Team Details & Members</h4>
+          </div>
+
+          <div class="row g-4 mb-5">
+            <div class="col-md-8">
+              <div class="accordion" id="teamsAccordion">
+                <!-- Platform Team -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button
+                      class="accordion-button fw-bold"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#platformTeam"
+                      aria-expanded="true"
+                      aria-controls="platformTeam"
+                    >
+                      <i class="fa-solid fa-server me-2 text-primary"></i>
+                      Platform Team
+                      <span class="badge bg-primary ms-2">28 Members</span>
+                    </button>
+                  </h2>
+                  <div
+                    id="platformTeam"
+                    class="accordion-collapse collapse show"
+                    data-bs-parent="#teamsAccordion"
+                  >
+                    <div class="accordion-body p-0">
+                      <div class="list-group list-group-flush">
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">Senior Backend Developer</h6>
+                              <p class="text-muted mb-0 small">5 assignees</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                          </div>
+                        </a>
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">DevOps Engineer</h6>
+                              <p class="text-muted mb-0 small">8 assignees</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                          </div>
+                        </a>
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">QA Specialist</h6>
+                              <p class="text-muted mb-0 small">3 assignees</p>
+                            </div>
+                            <span class="badge bg-warning">Limited</span>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Data Science Team -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button
+                      class="accordion-button fw-bold collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#dataScienceTeam"
+                      aria-expanded="false"
+                      aria-controls="dataScienceTeam"
+                    >
+                      <i class="fa-solid fa-brain me-2 text-info"></i>
+                      Data Science Team
+                      <span class="badge bg-info ms-2">14 Members</span>
+                    </button>
+                  </h2>
+                  <div
+                    id="dataScienceTeam"
+                    class="accordion-collapse collapse"
+                    data-bs-parent="#teamsAccordion"
+                  >
+                    <div class="accordion-body p-0">
+                      <div class="list-group list-group-flush">
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">ML Engineer</h6>
+                              <p class="text-muted mb-0 small">6 assignees</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                          </div>
+                        </a>
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">Data Analyst</h6>
+                              <p class="text-muted mb-0 small">8 assignees</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mobile Team -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button
+                      class="accordion-button fw-bold collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#mobileTeam"
+                      aria-expanded="false"
+                      aria-controls="mobileTeam"
+                    >
+                      <i
+                        class="fa-solid fa-mobile-screen me-2 text-warning"
+                      ></i>
+                      Mobile App Team
+                      <span class="badge bg-warning ms-2">18 Members</span>
+                    </button>
+                  </h2>
+                  <div
+                    id="mobileTeam"
+                    class="accordion-collapse collapse"
+                    data-bs-parent="#teamsAccordion"
+                  >
+                    <div class="accordion-body p-0">
+                      <div class="list-group list-group-flush">
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">iOS Developer</h6>
+                              <p class="text-muted mb-0 small">7 assignees</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                          </div>
+                        </a>
+                        <a
+                          href="#"
+                          class="list-group-item list-group-item-action"
+                        >
+                          <div
+                            class="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              <h6 class="mb-1">Android Developer</h6>
+                              <p class="text-muted mb-0 small">11 assignees</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading Spinner Example -->
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                  <h5 class="fw-bold mb-0">System Status</h5>
+                </div>
+                <div class="card-body text-center p-4">
+                  <div class="mb-4">
+                    <span class="badge bg-success p-3 fs-6">
+                      <i class="fa-solid fa-circle-check me-2"></i>
+                      All Systems Operational
+                    </span>
+                  </div>
+
+                  <div class="mb-3">
+                    <h6 class="text-muted mb-3">Syncing Data...</h6>
+                    <div class="spinner-border text-primary mb-3" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+
+                  <div class="alert alert-info small mb-0">
+                    <i class="fa-solid fa-info-circle me-2"></i>
+                    Last updated 2 minutes ago
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="addProjectModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-header border-bottom-0 pb-0">
+            <h5 class="modal-title fw-bold">Create New Project</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body pt-4">
+            <form id="addProjectForm">
+              <div class="mb-3">
+                <label class="form-label fw-medium">Project Name</label>
+                <input
+                  type="text"
+                  class="form-control bg-body-tertiary"
+                  id="projectName"
+                  placeholder="e.g. Cloud Migration"
+                  required
+                />
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-medium">Team</label>
+                  <select class="form-select bg-body-tertiary" id="projectTeam">
+                    <option value="Backend">Backend</option>
+                    <option value="Frontend">Frontend</option>
+                    <option value="DevOps">DevOps</option>
+                    <option value="Data Science">Data Science</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-medium">Due Date</label>
+                  <input
+                    type="month"
+                    class="form-control bg-body-tertiary"
+                    id="projectDue"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-medium">Current Progress</label>
+                <input
+                  type="range"
+                  class="form-range"
+                  id="projectProgress"
+                  min="0"
+                  max="100"
+                  value="0"
+                  oninput="this.nextElementSibling.value = this.value + '%'"
+                />
+                <output class="fw-bold small">0%</output>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-medium">Description</label>
+                <textarea
+                  class="form-control bg-body-tertiary"
+                  id="projectDescription"
+                  rows="3"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button
+              type="button"
+              class="btn btn-link text-decoration-none text-body-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary rounded-pill px-4"
+              id="saveProjectBtn"
+            >
+              Create Project
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Wrap in DOMContentLoaded to ensure elements exist
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- INITIALIZE TOOLTIPS ---
+        const tooltipTriggerList = [].slice.call(
+          document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+        );
+        tooltipTriggerList.map((tooltipTriggerEl) => {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // --- NOTIFICATION BUTTON HANDLER ---
+        const notificationBtn = document.getElementById("notificationBtn");
+        if (notificationBtn) {
+          notificationBtn.addEventListener("click", function () {
+            showToast();
+          });
+        }
+
+        // --- TOAST NOTIFICATION ---
+        const showToast = () => {
+          const toastHTML = `
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <i class="fa-solid fa-bell text-warning me-2"></i>
+                <strong class="me-auto">Notifications</strong>
+                <small>just now</small>
+              </div>
+              <div class="toast-body">
+                <strong>Resource Allocation Update:</strong> Team "Platform" has 3 new pending requests awaiting approval.
+              </div>
+            </div>
+          `;
+
+          // Create container if it doesn't exist
+          if (!document.getElementById("toastContainer")) {
+            const container = document.createElement("div");
+            container.id = "toastContainer";
+            container.style.cssText =
+              "position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;";
+            document.body.appendChild(container);
+          }
+
+          const container = document.getElementById("toastContainer");
+          container.insertAdjacentHTML("beforeend", toastHTML);
+
+          // Auto-remove toast after 5 seconds
+          const toast = container.querySelector(".toast");
+          setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => toast.remove(), 300);
+          }, 5000);
+        };
+
+        // --- THEME LOGIC ---
+        const getStoredTheme = () => localStorage.getItem("theme") || "dark";
+
+        const setTheme = (theme) => {
+          document.documentElement.setAttribute("data-bs-theme", theme);
+          localStorage.setItem("theme", theme);
+
+          const icon = document.getElementById("themeIcon");
+          if (icon) {
+            // Check if icon exists before manipulating
+            if (theme === "dark") {
+              icon.classList.remove("fa-sun");
+              icon.classList.add("fa-moon");
+            } else {
+              icon.classList.remove("fa-moon");
+              icon.classList.add("fa-sun");
+            }
+          }
+
+          if (typeof updateCharts === "function") {
+            updateCharts(theme);
+          }
+        };
+
+        // --- CHART HELPERS ---
+        const getChartColors = (theme) => {
+          const isDark = theme === "dark";
+          return {
+            grid: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
+            text: isDark ? "#adb5bd" : "#6c757d",
+          };
+        };
+
+        // Chart instances
+        let utilChart, reportBar, reportPie;
+
+        const updateCharts = (theme) => {
+          const colors = getChartColors(theme);
+
+          if (utilChart) {
+            utilChart.options.scales.y.grid.color = colors.grid;
+            utilChart.options.scales.y.ticks.color = colors.text;
+            // x-axis doesn't have grid in config, just ticks
+            utilChart.options.scales.x.ticks.color = colors.text;
+            utilChart.update();
+          }
+          if (reportBar) {
+            reportBar.options.scales.y.grid.color = colors.grid;
+            reportBar.options.scales.y.ticks.color = colors.text;
+            reportBar.options.scales.x.ticks.color = colors.text;
+            reportBar.update();
+          }
+          // Pie chart doesn't need grid/text update usually, but can update border if needed
+          if (reportPie) {
+            reportPie.update();
+          }
+        };
+
+        // --- INITIALIZE CHARTS ---
+        const initCharts = () => {
+          const theme = getStoredTheme();
+          const colors = getChartColors(theme);
+
+          // 1. Utilization
+          const ctx = document.getElementById("utilChart");
+          if (ctx) {
+            utilChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+                datasets: [
+                  {
+                    label: "Overall utilization",
+                    data: [62, 68, 71, 73, 76, 84],
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: "rgba(13,110,253,0.1)",
+                    borderColor: "#0d6efd",
+                    pointBackgroundColor: "#0d6efd",
+                    pointBorderColor: "#fff",
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: {
+                    beginAtZero: false,
+                    min: 40,
+                    max: 100,
+                    grid: { color: colors.grid },
+                    ticks: { color: colors.text },
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { color: colors.text },
+                  },
+                },
+              },
+            });
+          }
+
+          // 2. Report Bar
+          const barCtx = document.getElementById("reportBar");
+          if (barCtx) {
+            reportBar = new Chart(barCtx, {
+              type: "bar",
+              data: {
+                labels: ["Payments", "Analytics", "Infra", "AI", "CRM"],
+                datasets: [
+                  {
+                    label: "Efficiency (%)",
+                    data: [82, 76, 88, 91, 73],
+                    backgroundColor: "rgba(13,110,253,0.7)",
+                    borderRadius: 4,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: colors.grid },
+                    ticks: { color: colors.text },
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { color: colors.text },
+                  },
+                },
+              },
+            });
+          }
+
+          // 3. Report Pie
+          const pieCtx = document.getElementById("reportPie");
+          if (pieCtx) {
+            reportPie = new Chart(pieCtx, {
+              type: "doughnut",
+              data: {
+                labels: ["Frontend", "Backend", "Data Science", "QA", "DevOps"],
+                datasets: [
+                  {
+                    data: [25, 30, 20, 15, 10],
+                    backgroundColor: [
+                      "rgba(13,110,253,0.8)",
+                      "rgba(25,135,84,0.8)",
+                      "rgba(255,193,7,0.8)",
+                      "rgba(220,53,69,0.8)",
+                      "rgba(102,16,242,0.8)",
+                    ],
+                    borderWidth: 0,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: "bottom",
+                    labels: { usePointStyle: true },
+                  },
+                },
+              },
+            });
+          }
+        };
+
+        // --- EXECUTION ORDER ---
+        setTheme(getStoredTheme()); // 1. Set styles
+        initCharts(); // 2. Create charts with correct styles
+
+        // --- EVENT LISTENERS ---
+        const toggleBtn = document.getElementById("themeToggle");
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", () => {
+            const currentTheme =
+              document.documentElement.getAttribute("data-bs-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            setTheme(newTheme);
+          });
+        }
+
+        // Add Project Logic
+        const saveBtn = document.getElementById("saveProjectBtn");
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            const name = document.getElementById("projectName").value;
+            const team = document.getElementById("projectTeam").value;
+            const progressVal =
+              document.getElementById("projectProgress").value;
+            const due = document.getElementById("projectDue").value;
+            const desc = document.getElementById("projectDescription").value;
+
+            if (!name || !due) {
+              alert("Please fill in required fields.");
+              return;
+            }
+
+            // Determine badge color
+            let badgeClass = "bg-secondary-subtle text-secondary";
+            if (team === "Backend")
+              badgeClass = "bg-primary-subtle text-primary";
+            if (team === "Data Science")
+              badgeClass = "bg-success-subtle text-success";
+            if (team === "DevOps")
+              badgeClass = "bg-warning-subtle text-warning";
+
+            // Parse Date
+            const dateDate = new Date(due);
+            const month = dateDate
+              .toLocaleString("default", { month: "short" })
+              .toUpperCase();
+            const year = dateDate.getFullYear();
+
+            const newCard = `
+                          <div class="col-md-6 col-lg-4">
+                             <div class="card border-0 shadow-sm h-100 rounded-4">
+                                 <div class="card-body">
+                                      <div class="d-flex justify-content-between align-items-start mb-3">
+                                          <div>
+                                              <h5 class="card-title fw-bold mb-1">${name}</h5>
+                                              <span class="badge ${badgeClass} border border-opacity-10">${team}</span>
+                                          </div>
+                                          <div class="dropdown">
+                                              <button class="btn btn-link text-body-secondary p-0" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                              <ul class="dropdown-menu"><li><a class="dropdown-item" href="#">Action</a></li></ul>
+                                          </div>
+                                      </div>
+                                      <p class="card-text text-body-secondary small">${desc || "No description provided."}</p>
+                                      
+                                      <div class="d-flex justify-content-between align-items-end mt-4">
+                                          <div class="w-100 me-3">
+                                              <div class="d-flex justify-content-between mb-1">
+                                                  <span class="small fw-medium">Progress</span>
+                                                  <span class="small fw-bold">${progressVal}%</span>
+                                              </div>
+                                               <div class="progress" role="progressbar" style="height: 6px">
+                                                 <div class="progress-bar" style="width: ${progressVal}%"></div>
+                                             </div>
+                                          </div>
+                                          <div class="bg-body-secondary rounded p-2 text-center" style="min-width: 60px;">
+                                              <div class="small fw-bold">${month}</div>
+                                               <div class="fw-bold small text-muted">${year}</div>
+                                          </div>
+                                      </div>
+                                 </div>
+                                  <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                                     <div class="d-flex align-items-center">
+                                         <span class="small text-muted">Just added</span>
+                                     </div>
+                                 </div>
+                             </div>
+                          </div>
+                    `;
+
+            const grid = document.getElementById("projectGrid");
+            if (grid) grid.insertAdjacentHTML("beforeend", newCard);
+
+            const modalEl = document.getElementById("addProjectModal");
+            if (modalEl) {
+              const modal = bootstrap.Modal.getInstance(modalEl);
+              if (modal) modal.hide();
+            }
+            document.getElementById("addProjectForm").reset();
+          });
+        }
+      });
+    </script>
   </body>
 </html>
